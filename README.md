@@ -15,6 +15,20 @@ The winch is the actuator of the PID system. A 3500lb maximum pulling force was 
 
 A single 4-wire cable carries the phase current to the winch motor from the stepper driver.  Currently the winch is powered by 120V AC and 8.2A peak current and has reached a maximum pulling force of 2100lbs before the motor started losing steps. Upgrading to 240V AC as this motor is intended should output the rated 22.1ft-lb torque and is speculated to be able to pull at least the full 3500lbs. Be aware that leaving the system armed for long periods at a high current setting can make the motor too hot to touch. It is normal for stepper motors to get this hot.
 
+| Component                      | Specification                       |
+| ------------------------------ | ----------------------------------- |
+| Motor | [NEMA 42, 30Nm](https://www.omc-stepperonline.com/nema-42-cnc-stepper-motor-bipolar-30nm-4248oz-in-8a-110x201mm-4-wires-for-nmrv50-worm-gearbox-42hs79-8004s1) |
+| Winch | [Thern 482](https://thern.motionsavers.com/assets/3627/15/WormGear_HandWinch.pdf) |
+| Chain Drive | 12T – 60T, #35 roller chain |
+| Mounting Plate | 1/4” Steel plates |
+
+| Motor Wire Color               | Extension Wire Color                | Stepper Driver Assignment           |
+| ------------------------------ | ----------------------------------- | ----------------------------------- |
+| Red                            | Red                                 | A+                                  |
+| Green                          | Green                               | A-                                  |
+| Yellow                         | White                               | B+                                  |
+| Blue                           | Black                               | B-                                  |
+
 ### Control Box
 <img src="./images/control_box.png">
 The “Control Box” is the heart of the system. It contains the stepper motor driver, power relay, HX-100, and the Arduino mega microcontroller. This is intended to go somewhere near the PC in the static test lab area.  Note that the HX-100 is a signal breakout for the Arduino only and has no internal circuitry. The system currently has four independent power sources:
@@ -74,7 +88,7 @@ First, the user can manually send a target load value to the system by entering 
 Automatic PID control is the second PID method, allowing the user to program in a sequence of loads to the system. The application features an editable program table with load in column one and time in column two. A sequence of loads can be entered into column one with the duration of the command (in seconds) entered into the corresponding row of the time column.
 
 <p align="center">
-  <img width="150" src="./images/GUI2.PNG">
+  <img width="200" src="./images/GUI2.PNG">
 </p>
 
 The figure to the above shows an example of a program running in-progress. The program will send a load of 50 lbs, wait for 30 seconds, then send a load of 100 lbs, wait for 30 seconds, then send a load of 200 lbs, wait for 30 seconds, and finally send a load of 0 lbs, after which the program will terminate. The smallest time allowed in the time column is 3 seconds. It is important to note that a row is skipped of the time at that row is set to 0. Thus, if the desired endpoint of the program is 0 lbs, the user must manually enter in the final row, 0 lbs for load and a non-zero number of seconds for column. The rest of the program is skipped because 0 seconds is entered for time.
@@ -183,3 +197,32 @@ Set up a pull like normal and tie off most of the slack. Zero the load cell. Use
 Use the textbox to command the system to pull at a specified load. For automatic control, either import an existing program saved in an excel sheet or enter the program sequence in the table. Note that an instruction in a sequence must have a non-zero time value in order to be executed as zero time values are automatically skipped. After loading the program, press “Execute” to run the program. To disable the timing function and take control of the sequence, simply pause the timer and use the “Skip” button to pass the next command. Press “Terminate” to prematurely end the program and freeze the system in place.
 
 ## Parts List
+
+| Item                        | Price     | Link                                |
+| --------------------------- | --------- | ----------------------------------- |
+| Winch                       | 1881.00   | [Thern 2W40-L Worm Gear Hand Winch](https://thern.motionsavers.com/products/worm-gear-hand-winches/2w40-l/) |
+| Nema 42 Stepper Motor       | 176.12    | [Nema 42 CNC Stepper Motor Bipolar 30Nm(4248oz.in) 8A 110x201mm 4 Wires for NmRV50 Worm Gearbox](https://www.omc-stepperonline.com/nema-42-cnc-stepper-motor-bipolar-30nm-4248oz-in-8a-110x201mm-4-wires-for-nmrv50-worm-gearbox-42hs79-8004s1) |
+| Stepper Driver              | 148.83    | [Digital Stepper Driver 0.5-8.2A 180-240VAC for Nema 34,42 Stepper Motor](https://www.omc-stepperonline.com/digital-stepper-driver-0-5-8-2a-180-240vac-for-nema-34-42-stepper-motor-dm2282t)  |
+| HX-100                      | 50.00     | [Loadstar HX-100 Breakout Board](https://www.loadstarsensors.com/hybridadapter)  |
+| Arduino (and electronics)   | 65.99     | [ELEGOO Mega R3 Project The Most Complete Ultimate Starter Kit with Tutorial Compatible with Arduino IDE](https://www.amazon.com/EL-KIT-008-Project-Complete-Ultimate-TUTORIAL/dp/B01EWNUUUA/ref=sr_1_2_sspa?crid=68SVOYLK38S6&keywords=arduino+kit&qid=1686791234&sprefix=arduino%2Caps%2C213&sr=8-2-spons&ufe=app_do%3Aamzn1.fos.006c50ae-5d4c-4777-9bc0-4513d670b6bc&psc=1&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUExV1E5U0U4MTJBMFVVJmVuY3J5cHRlZElkPUEwNDU0NTcyM0RFT1BPOTAxMzlESSZlbmNyeXB0ZWRBZElkPUEwNTQyNzgzMllKVEdLM0pFNURRViZ3aWRnZXROYW1lPXNwX2F0ZiZhY3Rpb249Y2xpY2tSZWRpcmVjdCZkb05vdExvZ0NsaWNrPXRydWU=) |
+| 240V Relay                  | 6.50      | [782-2C-12D](https://www.automationdirect.com/adc/shopping/catalog/relays_-z-_timers/electro-mechanical_relays/782-2c-12d) |
+| Relay Socket                |           |                                     |
+| E-stop 2x                   | 38.00     | [AR30V0L-01E3RZC](https://www.automationdirect.com/adc/shopping/catalog/pushbuttons_-z-_switches_-z-_indicators/emergency_stop_pushbuttons/ar30v0l-01e3rzc?gclid=EAIaIQobChMI-fyi8_vX_wIVWDWtBh0m5QQ8EAQYAiABEgL59vD_BwE)|
+| 12V Supply                  | 12.99     | [12V 2A Power Supply AC Adapter, AC 100-240V to DC 12 Volt Transformers, 2.1mm X 5.5mm Wall Plug (12 Volt - 2amp - 2pack)](https://www.amazon.com/100-240V-Transformers-Switching-Applications-Connectors/dp/B077PW5JC3/ref=sr_1_5?keywords=12v+power+adapter+supply&qid=1687476101&sr=8-5) |
+| 12T #35 Sprocket            | 17.19     | [Roller Chain Sprocket for ANSI 35 Chain, 12 Teeth, for 3/4" Shaft Diameter](https://www.mcmaster.com/6280K343/) |
+| 60T #35 Sprocket            | 86.33     | [Roller Chain Sprocket for ANSI 35 Chain, 60 Teeth, for 1" Shaft Diameter](https://www.mcmaster.com/6236K272/)  |
+| 3/16 Key Stock              | 1.25      | [1008-1045 Carbon Steel Machine Key Stock 12" Long, 3/16" High x 3/16" Wide, Oversized](https://www.mcmaster.com/98830A150/) |
+| 3ft #35 roller chain        | 13.08     | [#35 ANSI Roller Chain](https://www.mcmaster.com/products/chain/ansi-roller-chain-and-links-10/roller-chain-trade-size~35/component~chain/)   |
+| 3x #35 Master Link          | 1.84/pc   | [Connecting Link for ANSI Number 35 Single Strand Roller Chain](https://www.mcmaster.com/6261K191/)  |
+| Synthetic Worm Gear Oil 2x  | 23.66     | [Mobil SHC 634 Gear Oil, 32 FL. oz. Bottle](https://www.mcmaster.com/2158K66/)    |
+| 5.5" 1/2-13 Bolt            | 11.26     | [Medium-Strength Grade 5 Steel Hex Head Screw Zinc-Plated, 1/2"-13 Thread Size, 5-1/2" Long, Partially Threaded](https://www.mcmaster.com/91247A734/)   |
+| Stepper Wire 6m             | 21.66     | [AWG #18 High-flexible with Shield Layer Stepper Motor Cable](https://www.omc-stepperonline.com/awg-18-high-flexible-with-shield-layer-stepper-motor-cable-cm-18s)  |
+| Mini USB Panel Mount        | 6.88      | [Cablecc Panel Mount Type Mini USB2.0 5Pin Male to Female Extension Adapter Cable with Screws 50cm](https://www.amazon.com/dp/B06Y1PWSY7/?coliid=IJLUNPF46R0DT&colid=2QOCEHPWR9F6Y&ref_=list_c_wl_lv_ov_lig_dp_it&th=1)   |
+| 22mm E-stop                 | 13.89     | [APIELE 22mm Metal Emergency Stop Push Button Swicth Latching 12V-250V Stianless Steel 7/8" Mouting Hole 1 Pack](https://www.amazon.com/dp/B07MJ347XL/ref=sspa_dk_detail_0?pd_rd_i=B07MJ347XL&pd_rd_w=oD4PK&content-id=amzn1.sym.f734d1a2-0bf9-4a26-ad34-2e1b969a5a75&pf_rd_p=f734d1a2-0bf9-4a26-ad34-2e1b969a5a75&pf_rd_r=9ZC69A95PXS3W7XKTPRG&pd_rd_wg=7HK0c&pd_rd_r=6a8281ef-b7e4-45f4-80b0-b282e0063fea&s=industrial&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWw&th=1)   |
+| Mini USB Extension          | 6.99      | [LIONX USB 2.0 Mini USB 5Pin Male to Female Extension Adapter Cable 5ft Mini USB Extension Cable](https://www.amazon.com/dp/B09Y5QBZLV/?coliid=IMTHK4MAWCVRE&colid=2QOCEHPWR9F6Y&psc=1&ref_=list_c_wl_lv_ov_lig_dp_it)   |
+| M12 4 Pin 5m                | 15.49     | [uxcell M12 Female Straight 4 Pins Connector Aviation Socket Electrical Cable 5M](https://www.amazon.com/dp/B0716F16MR/?coliid=I1K252IVJU63QW&colid=2QOCEHPWR9F6Y&ref_=list_c_wl_lv_ov_lig_dp_it&th=1)  |
+| M12 4 Pin Panel Mount       | 9.99      | [Ruiwaer 2PCS M12 4 Pin Male Aviation Panel Mount Connector Waterproof Chassis Panel Back Mount Socket Sensor Connector](https://www.amazon.com/dp/B0C6M891S8/?coliid=I3HH7NJI04EO7Q&colid=2QOCEHPWR9F6Y&psc=1&ref_=list_c_wl_lv_ov_lig_dp_it)  |
+| M12 5 Pin Panel Mount       | 13.99     | [Elecbee 5 Pin M12 Connector A Coded Straight Back Mount Cable 0.2M Waterproof Male Receptacles M12 Male 5 Pin Waterproof Connector](https://www.amazon.com/dp/B09JC9YMC5/?coliid=IFTCS5V4OCF3C&colid=2QOCEHPWR9F6Y&psc=1&ref_=list_c_wl_lv_ov_lig_dp_it)  |
+| M12 5 Pin 5m                | 17.73     | [Uxcell a16110400ux0295 M12 Female Straight 5 Pins Connector Aviation Socket Electrical Cable 5M Gray](https://www.amazon.com/dp/B01MTC4CX3/?coliid=I3B7RASJZSYQ7M&colid=2QOCEHPWR9F6Y&psc=1&ref_=list_c_wl_lv_ov_lig_dp_it) |
+| M12 4 Pin 2m                | 12.49     | [uxcell M12 Female Straight 4 Pin Connector Aviation Socket Electrical Cable 2M](https://www.amazon.com/dp/B0725531KZ/?coliid=I2GFLIJ4K422K1&colid=2QOCEHPWR9F6Y&ref_=list_c_wl_lv_ov_lig_dp_it&th=1) |
+| Nema C14 AC Socket/Switch   | 15.74     | [Qualtek 764-00/003](https://www.digikey.com/en/products/detail/qualtek/764-00%2F003/417922?utm_adgroup=&utm_source=google&utm_medium=cpc&utm_campaign=PMax%20Product_High%20ROAS%20Categories&utm_term=&utm_content=&gclid=EAIaIQobChMIqN3y_c68gAMVSBitBh3PDwwrEAQYBSABEgIibfD_BwE)  |

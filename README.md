@@ -36,7 +36,7 @@ The load cell measures the force of the static pull and provides force feedback 
 There are two normally closed E-stops wired in series through a 12V power supply and relay coil. Both the pendant and E-stop base must be plugged in and depressed before the power relay can close to arm the system. The relay will light and the motor will hiss when the system is armed.
 
 ## Control Panel PC Application
-
+![](./images/GUI1.png)
 The Control Panel Application is a custom GUI software that serves as the main user interface for the operation of the system. The application allows for an intuitive interface to command the system without having to access the command line. The GUI is built in Python 3.11.4 and makes use of several open-source frameworks and libraries: the PySide6 6.5.2 framework, the official Python wrapper for Qt, for GUI and application development, pySerial 3.5 for serial communication between the PC and the Arduino, and pandas 2.0.3 and NumPy 1.25.2 for data processing. The code is packaged into an application using PyInstaller 5.13.0 in .exe format. The application can be distributed and run on any computer without Python or any of the dependencies installed. To edit or make changes to the code, it is recommended that the same versions of Python and its libraries are installed.
 
 The Python language is chosen for the application primarily due to its ease of use and extensive ecosystem of open-source libraries. C++ (or Java) is usually considered a better language for application development, but for the purposes of this application, the performance differences in performance between Python and C++ are negligible. The Qt framework for GUI development is one of the most popular frameworks for application development. Qt was chosen for its reputability, extensive documentation, open-source governance, cross-platform compatibility, flexibility, and availability in C++ and Python.
@@ -67,8 +67,8 @@ The PID controller is located under the “PID Control” tab. This controller a
 First, the user can manually send a target load value to the system by entering a number in the textbox and pressing “Send target load.” This action will update the current target load display value and command the system to pull until it reaches the target load.
 
 Automatic PID control is the second PID method, allowing the user to program in a sequence of loads to the system. The application features an editable program table with load in column one and time in column two. A sequence of loads can be entered into column one with the duration of the command (in seconds) entered into the corresponding row of the time column.
-
-The figure to the left shows an example of a program running in-progress. The program will send a load of 50 lbs, wait for 30 seconds, then send a load of 100 lbs, wait for 30 seconds, then send a load of 200 lbs, wait for 30 seconds, and finally send a load of 0 lbs, after which the program will terminate. The smallest time allowed in the time column is 3 seconds. It is important to note that a row is skipped of the time at that row is set to 0. Thus, if the desired endpoint of the program is 0 lbs, the user must manually enter in the final row, 0 lbs for load and a non-zero number of seconds for column. The rest of the program is skipped because 0 seconds is entered for time.
+![](./images/GUI2.png)
+The figure to the above shows an example of a program running in-progress. The program will send a load of 50 lbs, wait for 30 seconds, then send a load of 100 lbs, wait for 30 seconds, then send a load of 200 lbs, wait for 30 seconds, and finally send a load of 0 lbs, after which the program will terminate. The smallest time allowed in the time column is 3 seconds. It is important to note that a row is skipped of the time at that row is set to 0. Thus, if the desired endpoint of the program is 0 lbs, the user must manually enter in the final row, 0 lbs for load and a non-zero number of seconds for column. The rest of the program is skipped because 0 seconds is entered for time.
 
 There are various controls available to the user. After entering a program, the user may press “Execute” to run the program. The “Pause” button stops the timer from counting the program. The “Skip” button automatically starts the next row. The “Pause” and “Skip” buttons may be used simultaneously to disable automatic timing in the program. Finally, the user may end the program early by pressing “Terminate”. Note, pressing “Terminate” will freeze the stepper motor in place but pressing “Pause” will not.
 
@@ -92,8 +92,8 @@ E-stop > Manual Pendant > Digital Speed Controller > Digital PID Controller.
 
 ### PID Control
 PID control calculations occur on the Arduino with tuned parameters. At the time of writing, the PID controller uses a 0.3 proportional gain, no integral gain, and no derivative gain. In other words, the PID system is just a proportional response controller.
-
-The figure to the left shows a load vs. time graph of an example pull. At about 37 seconds, the system is commanded to reach 400 lbs (red line) from 0 lbs. The error between the setpoint and the current load is 400 (green line), so the PID multiplies the error by the proportional gain to get the response. The response pulls the rope which reduces the error between the setpoint and the load, which can be seen by the blue line. By reducing the error, the PID response decreases. The stepper motor slows down until the target setpoint is reached.
+![](./images/pid_diagram.png)
+The figure above shows a load vs. time graph of an example pull. At about 37 seconds, the system is commanded to reach 400 lbs (red line) from 0 lbs. The error between the setpoint and the current load is 400 (green line), so the PID multiplies the error by the proportional gain to get the response. The response pulls the rope which reduces the error between the setpoint and the load, which can be seen by the blue line. By reducing the error, the PID response decreases. The stepper motor slows down until the target setpoint is reached.
 
 Formally, the PID response function u(t) is given by
 $$u(t)=K_p e(t) + K_i \int_0^t e(\tau)d\tau+ K_d  \frac{de(t)}{dt}$$
@@ -112,7 +112,7 @@ Proportional only PID has performed very well during testing. However, additiona
 
 ### Breakage Detection Algorithm
 Breakage detection stops the system in the event the sensed load decreases rapidly, such as breakage or slippage of the rope or fixture. Breakage detection prevents the PID from continuously pulling should a material failure occur, dropping load. Breaks are characterized in load graphs by a sudden, sharp decrease in load. The figure below shows two different load vs. time graphs during a break. The red line indicates the load setpoint. After the break, the program voids the setpoint and freezes the system.
-
+![](./images/break_detection.png)
 Several conditions must be met before a break detection error is thrown.  If the system is in PID mode, the current setpoint is greater than the previous setpoint, and the actual load decreases by more than a set percentage while over 10lbs, then breakage is triggered, freezing the system until a new target load is commanded.  The load > 10lbs condition exists to prevent breakage being detected when sensor noise makes up a non-negligible portion of the sensed load.
 
 ### Positive Feedback Detection Algorithm
@@ -121,7 +121,7 @@ Existing load cells may be calibrated in tension or compression. Tension cells r
 A positive feedback detection algorithm is implemented to prevent runaway control. Ideally, this detection algorithm will never be activated. However, positive feedback can result in catastrophic damage to the setup in a very short amount of time if unattended to. When the conditions of the detection are met, the system freezes and notifies the user to check the load cell.
 
 The figure below shows a positive feedback loop in a load vs. time graph. The setpoint is given by the red line, the load reading is given by the blue line, the error function is given by the orange lines, and the true load is given by the green line. Signal noise, rope slippage, and deflection are characterized by the perturbations seen in the line. Here, the error function induces a pull in the system, bringing the true load closer to the setpoint. However, the cell reads the negative of the true load so the error function increases, causing the system to increase pulling speed. This positive feedback loop causes the true load to blow past the setpoint.
-
+![](./images/positive_feedback.png)
 We cannot simply take the absolute value of the cell that would cause positive feedback in the negative region of the cell. We also cannot just trigger positive feedback when the instantaneous error function increases more than a desired amount because the relative sizes of perturbations change at higher loads. Instead, we approach this problem by measuring how the error function changes.
 
 In a negative feedback loop, the general trend of the absolute value of the error function is decreasing as the load reading approaches the setpoint. To detect positive feedback, we wish to know whether the absolute value of the error function is increasing over time. Recall that the error function is given by

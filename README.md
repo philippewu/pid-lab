@@ -74,7 +74,7 @@ First, the user can manually send a target load value to the system by entering 
 Automatic PID control is the second PID method, allowing the user to program in a sequence of loads to the system. The application features an editable program table with load in column one and time in column two. A sequence of loads can be entered into column one with the duration of the command (in seconds) entered into the corresponding row of the time column.
 
 <p align="center">
-  <img width="400" src="./images/GUI2.png">
+  <img width="150" src="./images/GUI2.PNG">
 </p>
 
 The figure to the above shows an example of a program running in-progress. The program will send a load of 50 lbs, wait for 30 seconds, then send a load of 100 lbs, wait for 30 seconds, then send a load of 200 lbs, wait for 30 seconds, and finally send a load of 0 lbs, after which the program will terminate. The smallest time allowed in the time column is 3 seconds. It is important to note that a row is skipped of the time at that row is set to 0. Thus, if the desired endpoint of the program is 0 lbs, the user must manually enter in the final row, 0 lbs for load and a non-zero number of seconds for column. The rest of the program is skipped because 0 seconds is entered for time.
@@ -101,7 +101,11 @@ E-stop > Manual Pendant > Digital Speed Controller > Digital PID Controller.
 
 ### PID Control
 PID control calculations occur on the Arduino with tuned parameters. At the time of writing, the PID controller uses a 0.3 proportional gain, no integral gain, and no derivative gain. In other words, the PID system is just a proportional response controller.
-![](./images/pid_diagram.png)
+
+<p align="center">
+  <img width="400" src="./images/pid_diagram.png">
+</p>
+
 The figure above shows a load vs. time graph of an example pull. At about 37 seconds, the system is commanded to reach 400 lbs (red line) from 0 lbs. The error between the setpoint and the current load is 400 (green line), so the PID multiplies the error by the proportional gain to get the response. The response pulls the rope which reduces the error between the setpoint and the load, which can be seen by the blue line. By reducing the error, the PID response decreases. The stepper motor slows down until the target setpoint is reached.
 
 Formally, the PID response function u(t) is given by
@@ -121,7 +125,11 @@ Proportional only PID has performed very well during testing. However, additiona
 
 ### Breakage Detection Algorithm
 Breakage detection stops the system in the event the sensed load decreases rapidly, such as breakage or slippage of the rope or fixture. Breakage detection prevents the PID from continuously pulling should a material failure occur, dropping load. Breaks are characterized in load graphs by a sudden, sharp decrease in load. The figure below shows two different load vs. time graphs during a break. The red line indicates the load setpoint. After the break, the program voids the setpoint and freezes the system.
-![](./images/break_detection.png)
+
+<p align="center">
+  <img width="600" src="./images/break_detection.png">
+</p>
+
 Several conditions must be met before a break detection error is thrown.  If the system is in PID mode, the current setpoint is greater than the previous setpoint, and the actual load decreases by more than a set percentage while over 10lbs, then breakage is triggered, freezing the system until a new target load is commanded.  The load > 10lbs condition exists to prevent breakage being detected when sensor noise makes up a non-negligible portion of the sensed load.
 
 ### Positive Feedback Detection Algorithm
@@ -130,7 +138,11 @@ Existing load cells may be calibrated in tension or compression. Tension cells r
 A positive feedback detection algorithm is implemented to prevent runaway control. Ideally, this detection algorithm will never be activated. However, positive feedback can result in catastrophic damage to the setup in a very short amount of time if unattended to. When the conditions of the detection are met, the system freezes and notifies the user to check the load cell.
 
 The figure below shows a positive feedback loop in a load vs. time graph. The setpoint is given by the red line, the load reading is given by the blue line, the error function is given by the orange lines, and the true load is given by the green line. Signal noise, rope slippage, and deflection are characterized by the perturbations seen in the line. Here, the error function induces a pull in the system, bringing the true load closer to the setpoint. However, the cell reads the negative of the true load so the error function increases, causing the system to increase pulling speed. This positive feedback loop causes the true load to blow past the setpoint.
-![](./images/positive_feedback.png)
+
+<p align="center">
+  <img width="300" src="./images/positive_feedback.png">
+</p>
+
 We cannot simply take the absolute value of the cell that would cause positive feedback in the negative region of the cell. We also cannot just trigger positive feedback when the instantaneous error function increases more than a desired amount because the relative sizes of perturbations change at higher loads. Instead, we approach this problem by measuring how the error function changes.
 
 In a negative feedback loop, the general trend of the absolute value of the error function is decreasing as the load reading approaches the setpoint. To detect positive feedback, we wish to know whether the absolute value of the error function is increasing over time. Recall that the error function is given by

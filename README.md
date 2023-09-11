@@ -3,7 +3,6 @@ by Philippe Wu and Michael Price
 
 ## System Overview
 The PID winch system is intended to add a degree of automation to the static test lab by reducing the number of operators and increasing the load application accuracy. Our system consists of a powered winch, control box, load cell, pendant, E-stop, and a PC. Here is a general system-wide wiring diagram for reference. Actual connections may vary.
-![](./images/system_overview.png)
 
 ## Mechanical/Electrical Setup
 ### Winch

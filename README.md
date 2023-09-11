@@ -4,9 +4,11 @@ by Philippe Wu and Michael Price
 ## System Overview
 The PID winch system is intended to add a degree of automation to the static test lab by reducing the number of operators and increasing the load application accuracy. Our system consists of a powered winch, control box, load cell, pendant, E-stop, and a PC. Here is a general system-wide wiring diagram for reference. Actual connections may vary.
 
+<img src="./images/system_overview.png">
+
 ## Mechanical/Electrical Setup
 ### Winch
-![](./images/winch_motor.jpg)
+<img src="./images/winch_motor.jpg" style="width:400px">
 The winch is the actuator of the PID system. A 3500lb maximum pulling force was a requirement for this project so a nema 42 stepper motor was chosen for this application at a 130:1 total reduction.  The reasoning for this is as follows: with a 3500lb force applied tangentially at the 4” diameter winch drum, 583ft-lbs (791Nm) would be required. Through the 26:1 worm and 5:1 chain reductions, this reduces to only 4.5ft-lbs (6.1Nm) that the motor needs to apply. A 22.1ft-lb (30Nm) motor was chosen for a few reasons: frictional losses in the worm gear, rope/cable winding on top of itself on the drum, both increase the required motor torque.  Also, the rated 22.1ft-lb torque is holding torque.  Stepper motors, by nature, reduce torque output at higher speeds, so selecting a motor with a much higher holding torque than required to hold 3500lbs allows for acceleration under load.
 
 A single 4-wire cable carries the phase current to the winch motor from the stepper driver.  Currently the winch is powered by 120V AC and 8.2A peak current and has reached a maximum pulling force of 2100lbs before the motor started losing steps. Upgrading to 240V AC as this motor is intended should output the rated 22.1ft-lb torque and is speculated to be able to pull at least the full 3500lbs. Be aware that leaving the system armed for long periods at a high current setting can make the motor too hot to touch. It is normal for stepper motors to get this hot.

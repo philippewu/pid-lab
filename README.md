@@ -8,13 +8,15 @@ The PID winch system is intended to add a degree of automation to the static tes
 
 ## Mechanical/Electrical Setup
 ### Winch
-<img src="./images/winch_motor.jpg" class="center" style="width:400px">
+<p align="center">
+  <img width="400" src="./images/winch_motor.jpg">
+</p>
 The winch is the actuator of the PID system. A 3500lb maximum pulling force was a requirement for this project so a nema 42 stepper motor was chosen for this application at a 130:1 total reduction.  The reasoning for this is as follows: with a 3500lb force applied tangentially at the 4” diameter winch drum, 583ft-lbs (791Nm) would be required. Through the 26:1 worm and 5:1 chain reductions, this reduces to only 4.5ft-lbs (6.1Nm) that the motor needs to apply. A 22.1ft-lb (30Nm) motor was chosen for a few reasons: frictional losses in the worm gear, rope/cable winding on top of itself on the drum, both increase the required motor torque.  Also, the rated 22.1ft-lb torque is holding torque.  Stepper motors, by nature, reduce torque output at higher speeds, so selecting a motor with a much higher holding torque than required to hold 3500lbs allows for acceleration under load.
 
 A single 4-wire cable carries the phase current to the winch motor from the stepper driver.  Currently the winch is powered by 120V AC and 8.2A peak current and has reached a maximum pulling force of 2100lbs before the motor started losing steps. Upgrading to 240V AC as this motor is intended should output the rated 22.1ft-lb torque and is speculated to be able to pull at least the full 3500lbs. Be aware that leaving the system armed for long periods at a high current setting can make the motor too hot to touch. It is normal for stepper motors to get this hot.
 
 ### Control Box
-![](./images/control_box.png)
+<img src="./images/control_box.png">
 The “Control Box” is the heart of the system. It contains the stepper motor driver, power relay, HX-100, and the Arduino mega microcontroller. This is intended to go somewhere near the PC in the static test lab area.  Note that the HX-100 is a signal breakout for the Arduino only and has no internal circuitry. The system currently has four independent power sources:
 * PC USB --> Arduino, pendant
 * PC USB --> load cell through HX-100
@@ -22,7 +24,7 @@ The “Control Box” is the heart of the system. It contains the stepper motor 
 * 120V – 240V AC --> Stepper driver and motor through relay
 
 Below is a pinout of the Arduino to the other devices as well as the port assignment. Please note the color coding on the M12 connectors. The 5-pin pendant can fit into either 4-pin M12 connectors so make sure to match colors. Nothing bad should happen if the pendant is plugged into the E-stop port, but the system won’t arm and work as intended. The M12 cable for the stepper motor has not been wired up for fear of the wire gauge being too small or chance of mistakenly connecting another device to the high-power driver output. The stepper driver has current and microstepping settings by dipswitches. The microstepping shouldn’t need to be adjusted, but adjusting the current limit is a rough way to set a limit on the maximum pulling force. At the time of writing, these settings are: 7.3A peak current and 800pul/rev microstepping. There is a cutout for a NEMA C14 Receptacle which has not been ordered yet.
-![](./images/arduino_schematic.png)
+<img src="./images/arduino_schematic.png">
 
 ### Pendant
 The pendant is a handheld remote control for the winch. This is intended to reside inside the static test area to be used to adjust slack in the rope/cable during setup. To jog the winch, the joystick must first be depressed. This is a safety feature. The pendant has an M12 5-pin connector and a 5-meter cable length.
@@ -37,7 +39,9 @@ The load cell measures the force of the static pull and provides force feedback 
 There are two normally closed E-stops wired in series through a 12V power supply and relay coil. Both the pendant and E-stop base must be plugged in and depressed before the power relay can close to arm the system. The relay will light and the motor will hiss when the system is armed.
 
 ## Control Panel PC Application
-![](./images/GUI1.png)
+<p align="center">
+  <img width="400" src="./images/GUI1.png">
+</p>
 The Control Panel Application is a custom GUI software that serves as the main user interface for the operation of the system. The application allows for an intuitive interface to command the system without having to access the command line. The GUI is built in Python 3.11.4 and makes use of several open-source frameworks and libraries: the PySide6 6.5.2 framework, the official Python wrapper for Qt, for GUI and application development, pySerial 3.5 for serial communication between the PC and the Arduino, and pandas 2.0.3 and NumPy 1.25.2 for data processing. The code is packaged into an application using PyInstaller 5.13.0 in .exe format. The application can be distributed and run on any computer without Python or any of the dependencies installed. To edit or make changes to the code, it is recommended that the same versions of Python and its libraries are installed.
 
 The Python language is chosen for the application primarily due to its ease of use and extensive ecosystem of open-source libraries. C++ (or Java) is usually considered a better language for application development, but for the purposes of this application, the performance differences in performance between Python and C++ are negligible. The Qt framework for GUI development is one of the most popular frameworks for application development. Qt was chosen for its reputability, extensive documentation, open-source governance, cross-platform compatibility, flexibility, and availability in C++ and Python.
@@ -68,7 +72,11 @@ The PID controller is located under the “PID Control” tab. This controller a
 First, the user can manually send a target load value to the system by entering a number in the textbox and pressing “Send target load.” This action will update the current target load display value and command the system to pull until it reaches the target load.
 
 Automatic PID control is the second PID method, allowing the user to program in a sequence of loads to the system. The application features an editable program table with load in column one and time in column two. A sequence of loads can be entered into column one with the duration of the command (in seconds) entered into the corresponding row of the time column.
-![](./images/GUI2.png)
+
+<p align="center">
+  <img width="400" src="./images/GUI2.png">
+</p>
+
 The figure to the above shows an example of a program running in-progress. The program will send a load of 50 lbs, wait for 30 seconds, then send a load of 100 lbs, wait for 30 seconds, then send a load of 200 lbs, wait for 30 seconds, and finally send a load of 0 lbs, after which the program will terminate. The smallest time allowed in the time column is 3 seconds. It is important to note that a row is skipped of the time at that row is set to 0. Thus, if the desired endpoint of the program is 0 lbs, the user must manually enter in the final row, 0 lbs for load and a non-zero number of seconds for column. The rest of the program is skipped because 0 seconds is entered for time.
 
 There are various controls available to the user. After entering a program, the user may press “Execute” to run the program. The “Pause” button stops the timer from counting the program. The “Skip” button automatically starts the next row. The “Pause” and “Skip” buttons may be used simultaneously to disable automatic timing in the program. Finally, the user may end the program early by pressing “Terminate”. Note, pressing “Terminate” will freeze the stepper motor in place but pressing “Pause” will not.

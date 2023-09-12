@@ -111,7 +111,7 @@ Executing commands on the GUI sends packets of serial data that is decoded, inte
 ## Arduino Code
 The role of the Arduino is to receive data from the load cell and commands from the PC. PID response calculations occur on the Arduino board which then sends electrical signals to the stepper motor driver. The Arduino also handles the manual override from the pendant and error detection features in the system.
 
-Arduino code is written in C++. The code utilizes the AccelStepper library to drive the stepper motor, the AutoPID library for PID response calculations, and the TimerOne library for timing. The code is well commented if changes need to be made. This section outlines the high-level overview of the Arduino and explanation of the custom algorithms implemented. For additional technical details, please see the markdown file (arduino_documentation.md) in the application folder.
+Arduino code is written in C++. The code utilizes the AccelStepper library to drive the stepper motor, the AutoPID library for PID response calculations, and the TimerOne library for timing. The code is well commented if changes need to be made. This section outlines the high-level overview of the Arduino and explanation of the custom algorithms implemented. For additional technical details, please see the code in the application folder.
 
 ### Control Hierarchy
 Together with the system wiring, the Arduino code implements a control hierarchy to deal with the multiple ways of commanding the system. The hierarchy is as follows:
